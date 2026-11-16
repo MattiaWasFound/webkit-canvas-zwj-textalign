@@ -8,8 +8,8 @@ sequence such as 🧑‍💼 (U+1F9D1 U+200D U+1F4BC). The text is drawn as if
 `measureText` still returns the correct width, and the same string without a
 ZWJ (💼Apple) is aligned correctly.
 
-**Live repro:** https://mattiawasfound.github.io/webkit-canvas-zwj-textalign/
-(or open [`index.html`](index.html) locally; it has no dependencies).
+**Repro:** open [`index.html`](index.html) in Safari. It is one file with no
+dependencies.
 
 ## Steps
 
