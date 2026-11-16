@@ -1,0 +1,56 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>Canvas textAlign with a ZWJ emoji</title>
+<style>
+  body { font: 14px -apple-system, system-ui, sans-serif; margin: 16px; }
+  .row { display: flex; align-items: center; gap: 12px; margin: 8px 0; }
+  canvas { border: 1px solid #ccc; }
+</style>
+<p>Each canvas draws a string with <code>fillText</code>. The blue line is the
+<code>x</code> passed to <code>fillText</code>; the red box is the text's
+measured width, placed where the alignment should put it.</p>
+<div id="ua"></div>
+<div id="out"></div>
+<script>
+const FONT = "24px sans-serif";
+const dpr = window.devicePixelRatio || 1;
+
+function row(label, text, align, manual = false) {
+  const W = 300, H = 50, X = align === "right" ? 250 : 150;
+  const c = document.createElement("canvas");
+  c.width = W * dpr; c.height = H * dpr;
+  c.style.width = W + "px"; c.style.height = H + "px";
+  const ctx = c.getContext("2d");
+  ctx.scale(dpr, dpr);
+  ctx.font = FONT;
+  const w = ctx.measureText(text).width;
+  const left = align === "center" ? X - w / 2 : align === "right" ? X - w : X;
+
+  ctx.fillStyle = "#000";
+  if (manual) {
+    ctx.textAlign = "left";
+    ctx.fillText(text, left, 33);
+  } else {
+    ctx.textAlign = align;
+    ctx.fillText(text, X, 33);
+  }
+  ctx.strokeStyle = "#e33"; ctx.strokeRect(left, 10, w, 30);
+  ctx.fillStyle = "#39f"; ctx.fillRect(X, 0, 1, H);
+
+  const d = document.createElement("div"); d.className = "row";
+  const t = document.createElement("div");
+  t.textContent = `${label}  (measureText width ${w.toFixed(1)})`;
+  d.append(c, t);
+  document.getElementById("out").append(d);
+}
+
+const ZWJ = "\u{1F9D1}‍\u{1F4BC}Apple";   // 🧑‍💼 = U+1F9D1 U+200D U+1F4BC
+const PLAIN = "\u{1F4BC}Apple";                  // 💼, no ZWJ
+
+document.getElementById("ua").textContent = navigator.userAgent;
+row("1. ZWJ emoji, textAlign center", ZWJ, "center");
+row("2. ZWJ emoji, textAlign right", ZWJ, "right");
+row("3. control: emoji without ZWJ, textAlign center", PLAIN, "center");
+row("4. control: ZWJ emoji, textAlign left at x - width/2", ZWJ, "center", true);
+</script>
